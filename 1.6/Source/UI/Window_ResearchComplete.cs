@@ -17,6 +17,7 @@ namespace TriumphantResearch
         private static FieldInfo _parentCategoryField;
         private static bool _reflectionInitialized;
         private bool reachedLastItem = false;
+        private Dictionary<Def, List<ThingDef>> recipeUsersCache = new Dictionary<Def, List<ThingDef>>();
 
         public Window_ResearchComplete(ResearchProjectDef project)
         {
@@ -85,9 +86,11 @@ namespace TriumphantResearch
                 contentOffsetY = 0f;
             }
 
+            int startIndex = Mathf.Max(0, currentIndex - 2);
+            int endIndex = Mathf.Min(unlockedDefs.Count - 1, currentIndex + 2);
             float itemsTotalWidth = 0f;
             float currentItemStartX = 0f;
-            for (int i = 0; i < unlockedDefs.Count; i++)
+            for (int i = startIndex; i <= endIndex; i++)
             {
                 float size = (i == currentIndex) ? currentItemSize : nextItemSize;
                 if (i < currentIndex)
@@ -96,7 +99,7 @@ namespace TriumphantResearch
                 }
                 itemsTotalWidth += size + itemSpacing;
             }
-            if (unlockedDefs.Any())
+            if (startIndex <= endIndex)
             {
                 itemsTotalWidth -= itemSpacing;
             }
@@ -109,7 +112,7 @@ namespace TriumphantResearch
             Widgets.BeginScrollView(viewRect, ref scrollPosition, contentRect, false);
 
             float currentX = sidePadding;
-            for (int i = 0; i < unlockedDefs.Count; i++)
+            for (int i = startIndex; i <= endIndex; i++)
             {
                 float itemSize = (i == currentIndex) ? currentItemSize : nextItemSize;
                 float itemY = (i == currentIndex) ? contentOffsetY : contentOffsetY + (currentItemSize - nextItemSize) / 2f;
@@ -225,52 +228,61 @@ namespace TriumphantResearch
         {
             if (def is ThingDef thingDef)
             {
-                IEnumerable<RecipeDef> recipes = DefDatabase<RecipeDef>.AllDefsListForReading.Where((RecipeDef r) => r.products.Count == 1 && r.products.Any((ThingDefCountClass p) => p.thingDef == thingDef) && !r.IsSurgery);
-                if (recipes.Any())
+                if (!recipeUsersCache.TryGetValue(def, out List<ThingDef> recipeUsers))
                 {
-                    IEnumerable<ThingDef> recipeUsers = recipes.Where((RecipeDef x) => x.recipeUsers != null).SelectMany((RecipeDef r) => r.recipeUsers)
-                        .Concat(from x in DefDatabase<ThingDef>.AllDefsListForReading
-                                where x.recipes != null && x.recipes.Any((RecipeDef y) => y.products.Any((ThingDefCountClass z) => z.thingDef == thingDef))
-                                select x).Distinct();
-
-                    if (recipeUsers.Any())
+                    IEnumerable<RecipeDef> recipes = DefDatabase<RecipeDef>.AllDefsListForReading.Where((RecipeDef r) => r.products.Count == 1 && r.products.Any((ThingDefCountClass p) => p.thingDef == thingDef) && !r.IsSurgery);
+                    if (recipes.Any())
                     {
-                        float iconSize = 24f;
-                        float lineHeight = Text.LineHeight;
-                        float curY = rect.y;
+                        recipeUsers = recipes.Where((RecipeDef x) => x.recipeUsers != null).SelectMany((RecipeDef r) => r.recipeUsers)
+                            .Concat(from x in DefDatabase<ThingDef>.AllDefsListForReading
+                                    where x.recipes != null && x.recipes.Any((RecipeDef y) => y.products.Any((ThingDefCountClass z) => z.thingDef == thingDef))
+                                    select x).Distinct().ToList();
+                        recipeUsersCache[def] = recipeUsers;
+                    }
+                    else
+                    {
+                        recipeUsersCache[def] = new List<ThingDef>();
+                        recipeUsers = recipeUsersCache[def];
+                    }
+                }
 
-                        Text.Font = GameFont.Small;
-                        Text.Anchor = TextAnchor.MiddleLeft;
+                if (recipeUsers.Any())
+                {
+                    float iconSize = 24f;
+                    float lineHeight = Text.LineHeight;
+                    float curY = rect.y;
 
-                        Widgets.Label(new Rect(rect.x, curY, rect.width, lineHeight), "TR_CreatedIn".Translate());
-                        curY += lineHeight;
+                    Text.Font = GameFont.Small;
+                    Text.Anchor = TextAnchor.MiddleLeft;
 
-                        foreach (ThingDef recipeUser in recipeUsers)
+                    Widgets.Label(new Rect(rect.x, curY, rect.width, lineHeight), "TR_CreatedIn".Translate());
+                    curY += lineHeight;
+
+                    foreach (ThingDef recipeUser in recipeUsers)
+                    {
+                        Rect iconRect = new Rect(rect.x, curY, iconSize, iconSize);
+                        float labelWidth = Text.CalcSize(recipeUser.LabelCap).x + 5;
+                        Rect labelRect = new Rect(rect.x + iconSize + 4f, curY, labelWidth, lineHeight);
+                        Rect clickRect = new Rect(iconRect.x - 5, iconRect.y, iconSize + labelWidth + 10, iconRect.height).ContractedBy(2);
+
+                        Widgets.DefIcon(iconRect, recipeUser);
+                        Widgets.Label(labelRect, recipeUser.LabelCap);
+
+                        if (Mouse.IsOver(clickRect))
                         {
-                            Rect iconRect = new Rect(rect.x, curY, iconSize, iconSize);
-                            float labelWidth = Text.CalcSize(recipeUser.LabelCap).x + 5;
-                            Rect labelRect = new Rect(rect.x + iconSize + 4f, curY, labelWidth, lineHeight);
-                            Rect clickRect = new Rect(iconRect.x - 5, iconRect.y, iconSize + labelWidth + 10, iconRect.height).ContractedBy(2);
-
-                            Widgets.DefIcon(iconRect, recipeUser);
-                            Widgets.Label(labelRect, recipeUser.LabelCap);
-
-                            if (Mouse.IsOver(clickRect))
-                            {
-                                Widgets.DrawHighlight(clickRect);
-                            }
-                            if (Widgets.ButtonInvisible(clickRect))
-                            {
-                                Find.WindowStack.Add(new Dialog_InfoCard(recipeUser));
-                            }
-
-                            curY += lineHeight;
+                            Widgets.DrawHighlight(clickRect);
+                        }
+                        if (Widgets.ButtonInvisible(clickRect))
+                        {
+                            Find.WindowStack.Add(new Dialog_InfoCard(recipeUser));
                         }
 
-                        Text.Anchor = TextAnchor.UpperLeft;
-                        Text.Font = GameFont.Small;
-                        return;
+                        curY += lineHeight;
                     }
+
+                    Text.Anchor = TextAnchor.UpperLeft;
+                    Text.Font = GameFont.Small;
+                    return;
                 }
             }
 
