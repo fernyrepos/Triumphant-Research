@@ -8,6 +8,7 @@ namespace TriumphantResearch
     [HarmonyPatch(typeof(ResearchManager), nameof(ResearchManager.FinishProject))]
     public static class ResearchManager_FinishProject_Patch
     {
+        public static bool adding;
         public static void Prefix(ResearchProjectDef proj, ref bool doCompletionDialog, ref bool doCompletionLetter)
         {
             if (Current.ProgramState != ProgramState.Playing || Find.GameInitData != null) return;
@@ -15,7 +16,9 @@ namespace TriumphantResearch
             {
                 doCompletionDialog = false;
                 doCompletionLetter = false;
+                adding = true;
                 Find.WindowStack.Add(new Window_ResearchComplete(proj));
+                adding = false;
             }
             else
             {

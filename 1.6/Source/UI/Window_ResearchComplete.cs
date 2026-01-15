@@ -316,12 +316,14 @@ namespace TriumphantResearch
         public override void PostClose()
         {
             base.PostClose();
-            if (ModsConfig.IsActive("arodoid.semirandomprogression"))
+            if (ModsConfig.IsActive("arodoid.semirandomprogression") && ResearchManager_FinishProject_Patch.adding is false)
             {
                 var semiRandomResearchButton = DefDatabase<MainButtonDef>.GetNamed("CM_Semi_Random_Research_MainButton_Next_Research", false);
                 if (semiRandomResearchButton != null && Find.MainTabsRoot != null)
                 {
+                    MainTabsRoot_SetCurrentTab_Patch.allow = true;
                     Find.MainTabsRoot.SetCurrentTab(semiRandomResearchButton, true);
+                    MainTabsRoot_SetCurrentTab_Patch.allow = false;
                 }
             }
         }
