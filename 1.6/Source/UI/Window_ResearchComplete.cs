@@ -22,7 +22,7 @@ namespace TriumphantResearch
             this.project = project;
             unlockedDefs = new List<Def>(project.UnlockedDefs);
             soundAppear = DefsOf.TR_ResearchComplete;
-            closeOnClickedOutside = true;
+            closeOnClickedOutside = false;
             doCloseX = true;
         }
 
@@ -236,6 +236,19 @@ namespace TriumphantResearch
                 return "TR_CreatedIn".Translate() + "\n" + categoryPath;
             }
             return string.Empty;
+        }
+
+        public override void PostClose()
+        {
+            base.PostClose();
+            if (ModsConfig.IsActive("arodoid.semirandomprogression"))
+            {
+                var semiRandomResearchButton = DefDatabase<MainButtonDef>.GetNamed("CM_Semi_Random_Research_MainButton_Next_Research", false);
+                if (semiRandomResearchButton != null && Find.MainTabsRoot != null)
+                {
+                    Find.MainTabsRoot.SetCurrentTab(semiRandomResearchButton, true);
+                }
+            }
         }
     }
 }
