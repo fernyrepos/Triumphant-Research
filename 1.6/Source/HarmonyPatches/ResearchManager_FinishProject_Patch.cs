@@ -1,6 +1,7 @@
 using HarmonyLib;
 using RimWorld;
 using Verse;
+using Verse.Sound;
 
 namespace TriumphantResearch
 {
@@ -14,18 +15,12 @@ namespace TriumphantResearch
             {
                 doCompletionDialog = false;
                 doCompletionLetter = false;
+                Find.WindowStack.Add(new Window_ResearchComplete(proj));
             }
-        }
-
-        public static void Postfix(ResearchProjectDef proj)
-        {
-            if (Current.ProgramState != ProgramState.Playing || Find.GameInitData != null) return;
-            if (proj.UnlockedDefs == null || proj.UnlockedDefs.Count == 0)
+            else
             {
-                return;
+                DefsOf.TR_ResearchComplete.PlayOneShotOnCamera();
             }
-
-            Find.WindowStack.Add(new Window_ResearchComplete(proj));
         }
     }
 }
