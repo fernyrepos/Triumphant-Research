@@ -33,11 +33,11 @@ namespace TriumphantResearch
 
         public override void DoWindowContents(Rect inRect)
         {
-            float bottomSectionHeight = 110f;
+            float bottomSectionHeight = 150f;
             float topSectionHeight = 60f;
             Rect topRect = new Rect(inRect.x, inRect.y, inRect.width, topSectionHeight);
             Rect bottomRect = new Rect(inRect.x, inRect.yMax - bottomSectionHeight, inRect.width, bottomSectionHeight);
-            Rect carouselRect = new Rect(inRect.x, topRect.yMax, inRect.width, inRect.height - topRect.height - bottomRect.height);
+            Rect carouselRect = new Rect(inRect.x, topRect.yMax, inRect.width, inRect.height - topRect.height - 120f);
 
             DrawTop(topRect);
             DrawCarousel(carouselRect);
@@ -171,8 +171,8 @@ namespace TriumphantResearch
             float textHeight = bottomRect.height;
             float textY = bottomRect.yMax - textHeight;
 
-            Rect createdInRect = new Rect(bottomRect.x, textY, createdInWidth, textHeight);
-            Rect descriptionRect = new Rect(createdInRect.xMax + 100, textY, descriptionWidth, textHeight);
+            Rect createdInRect = new Rect(bottomRect.x, textY, createdInWidth, textHeight - 35);
+            Rect descriptionRect = new Rect(createdInRect.xMax + 100, textY, descriptionWidth, textHeight - 35);
 
             string productionInfo = GetProductionInfo(currentDef);
             if (!productionInfo.NullOrEmpty())
