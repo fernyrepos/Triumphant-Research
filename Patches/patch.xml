@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Patch>   
+
+  <Operation Class="PatchOperationFindMod">
+    <mods>
+      <li>Royalty</li>
+    </mods>
+    <match Class="PatchOperationSequence">
+      <operations>
+                <li Class="PatchOperationReplace">
+                    <xpath>Defs/SoundDef[defName="TR_ResearchComplete"]/subSounds</xpath>
+                    <value>
+                        <subSounds>
+                        <li>
+                            <onCamera>True</onCamera>
+                            <grains>
+                            <li Class="AudioGrain_Folder">
+                                <clipFolderPath>Misc/MechCluster/Defeat</clipFolderPath>
+                            </li>
+                            </grains>
+                            <volumeRange>9</volumeRange>
+                        </li>
+                        </subSounds>
+                    </value>
+                </li>     
+      </operations>
+    </match>
+  </Operation>
+   
+</Patch>
