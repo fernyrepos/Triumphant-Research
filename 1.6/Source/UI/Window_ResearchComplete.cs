@@ -162,7 +162,6 @@ namespace TriumphantResearch
 
         private void DrawBottom(Rect bottomRect)
         {
-            float createdInWidth = 120f;
             float descriptionWidth = bottomRect.width - 400;
             float doneButtonWidth = 100f;
 
@@ -171,8 +170,8 @@ namespace TriumphantResearch
             float textHeight = bottomRect.height;
             float textY = bottomRect.yMax - textHeight;
 
-            Rect createdInRect = new Rect(bottomRect.x, textY, createdInWidth, textHeight - 35);
-            Rect descriptionRect = new Rect(createdInRect.xMax + 100, textY, descriptionWidth, textHeight - 35);
+            Rect createdInRect = new Rect(bottomRect.x, textY, bottomRect.width, textHeight - 35);
+            Rect descriptionRect = new Rect(bottomRect.x + 220, textY, descriptionWidth, textHeight - 35);
 
             DrawProductionInfo(createdInRect, currentDef);
 
@@ -249,10 +248,21 @@ namespace TriumphantResearch
                         foreach (ThingDef recipeUser in recipeUsers)
                         {
                             Rect iconRect = new Rect(rect.x, curY, iconSize, iconSize);
-                            Rect labelRect = new Rect(rect.x + iconSize + 4f, curY, rect.width - iconSize - 4f, lineHeight);
+                            float labelWidth = Text.CalcSize(recipeUser.LabelCap).x + 5;
+                            Rect labelRect = new Rect(rect.x + iconSize + 4f, curY, labelWidth, lineHeight);
+                            Rect clickRect = new Rect(iconRect.x - 5, iconRect.y, iconSize + labelWidth + 10, iconRect.height).ContractedBy(2);
 
                             Widgets.DefIcon(iconRect, recipeUser);
                             Widgets.Label(labelRect, recipeUser.LabelCap);
+
+                            if (Mouse.IsOver(clickRect))
+                            {
+                                Widgets.DrawHighlight(clickRect);
+                            }
+                            if (Widgets.ButtonInvisible(clickRect))
+                            {
+                                Find.WindowStack.Add(new Dialog_InfoCard(recipeUser));
+                            }
 
                             curY += lineHeight;
                         }
@@ -277,6 +287,9 @@ namespace TriumphantResearch
                 Text.Anchor = TextAnchor.MiddleLeft;
 
                 Widgets.Label(new Rect(rect.x, curY, rect.width, lineHeight), "TR_CreatedIn".Translate());
+                curY += lineHeight;
+
+                Widgets.Label(new Rect(rect.x, curY, rect.width, lineHeight), "TR_ArchitectMenu".Translate());
                 curY += lineHeight;
 
                 Rect labelRect = new Rect(rect.x + 4f, curY, rect.width - 4f, lineHeight);
