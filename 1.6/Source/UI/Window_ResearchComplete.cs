@@ -174,15 +174,11 @@ namespace TriumphantResearch
             Rect createdInRect = new Rect(bottomRect.x, textY, createdInWidth, textHeight - 35);
             Rect descriptionRect = new Rect(createdInRect.xMax + 100, textY, descriptionWidth, textHeight - 35);
 
-            string productionInfo = GetProductionInfo(currentDef);
-            if (!productionInfo.NullOrEmpty())
-            {
-                Widgets.Label(createdInRect, productionInfo.CapitalizeFirst());
-            }
+            DrawProductionInfo(createdInRect, currentDef);
 
             Widgets.LabelScrollable(descriptionRect, currentDef.description, ref descriptionScrollable);
 
-            if (reachedLastItem)
+            if (reachedLastItem || unlockedDefs.Count == 1)
             {
                 Rect doneButtonRect = new Rect(bottomRect.xMax - doneButtonWidth, bottomRect.yMax - 30, doneButtonWidth, 30f);
                 if (Widgets.ButtonText(doneButtonRect, "TR_Done".Translate()))
@@ -226,33 +222,70 @@ namespace TriumphantResearch
             return category.label;
         }
 
-        private string GetProductionInfo(Def def)
+        private void DrawProductionInfo(Rect rect, Def def)
         {
             if (def is ThingDef thingDef)
             {
                 IEnumerable<RecipeDef> recipes = DefDatabase<RecipeDef>.AllDefsListForReading.Where((RecipeDef r) => r.products.Count == 1 && r.products.Any((ThingDefCountClass p) => p.thingDef == thingDef) && !r.IsSurgery);
                 if (recipes.Any())
                 {
-                    IEnumerable<string> enumerable = (from u in recipes.Where((RecipeDef x) => x.recipeUsers != null).SelectMany((RecipeDef r) => r.recipeUsers)
-                                                      select u.label).Concat(from x in DefDatabase<ThingDef>.AllDefsListForReading
-                                                                             where x.recipes != null && x.recipes.Any((RecipeDef y) => y.products.Any((ThingDefCountClass z) => z.thingDef == thingDef))
-                                                                             select x.label).Distinct();
+                    IEnumerable<ThingDef> recipeUsers = recipes.Where((RecipeDef x) => x.recipeUsers != null).SelectMany((RecipeDef r) => r.recipeUsers)
+                        .Concat(from x in DefDatabase<ThingDef>.AllDefsListForReading
+                                where x.recipes != null && x.recipes.Any((RecipeDef y) => y.products.Any((ThingDefCountClass z) => z.thingDef == thingDef))
+                                select x).Distinct();
 
-                    if (enumerable.Any())
+                    if (recipeUsers.Any())
                     {
-                        return "TR_CreatedIn".Translate() + "\n" + enumerable.ToCommaList();
+                        float iconSize = 24f;
+                        float lineHeight = Text.LineHeight;
+                        float curY = rect.y;
+
+                        Text.Font = GameFont.Small;
+                        Text.Anchor = TextAnchor.MiddleLeft;
+
+                        Widgets.Label(new Rect(rect.x, curY, rect.width, lineHeight), "TR_CreatedIn".Translate());
+                        curY += lineHeight;
+
+                        foreach (ThingDef recipeUser in recipeUsers)
+                        {
+                            Rect iconRect = new Rect(rect.x, curY, iconSize, iconSize);
+                            Rect labelRect = new Rect(rect.x + iconSize + 4f, curY, rect.width - iconSize - 4f, lineHeight);
+
+                            Widgets.DefIcon(iconRect, recipeUser);
+                            Widgets.Label(labelRect, recipeUser.LabelCap);
+
+                            curY += lineHeight;
+                        }
+
+                        Text.Anchor = TextAnchor.UpperLeft;
+                        Text.Font = GameFont.Small;
+                        return;
                     }
                 }
             }
 
             if (def is BuildableDef buildable && buildable.designationCategory != null)
             {
+                float lineHeight = Text.LineHeight;
+                float curY = rect.y;
+
                 string categoryPath = ModsConfig.IsActive("ferny.BetterArchitect")
                     ? GetCategoryPath(buildable.designationCategory)
                     : buildable.designationCategory.label;
-                return "TR_CreatedIn".Translate() + "\n" + categoryPath;
+
+                Text.Font = GameFont.Small;
+                Text.Anchor = TextAnchor.MiddleLeft;
+
+                Widgets.Label(new Rect(rect.x, curY, rect.width, lineHeight), "TR_CreatedIn".Translate());
+                curY += lineHeight;
+
+                Rect labelRect = new Rect(rect.x + 4f, curY, rect.width - 4f, lineHeight);
+
+                Widgets.Label(labelRect, categoryPath.CapitalizeFirst());
+
+                Text.Anchor = TextAnchor.UpperLeft;
+                Text.Font = GameFont.Small;
             }
-            return string.Empty;
         }
 
         public override void PostClose()
