@@ -16,6 +16,7 @@ namespace TriumphantResearch
         private Vector2 scrollPosition = Vector2.zero;
         private static FieldInfo _parentCategoryField;
         private static bool _reflectionInitialized;
+        private bool reachedLastItem = false;
 
         public Window_ResearchComplete(ResearchProjectDef project)
         {
@@ -23,6 +24,8 @@ namespace TriumphantResearch
             unlockedDefs = new List<Def>(project.UnlockedDefs);
             soundAppear = DefsOf.TR_ResearchComplete;
             closeOnClickedOutside = false;
+            absorbInputAroundWindow = true;
+            forcePause = true;
             doCloseX = true;
         }
 
@@ -140,15 +143,19 @@ namespace TriumphantResearch
             {
                 float navButtonY = rect.y + (rect.height / 2f) - (navButtonWidth / 2f);
                 Rect prevButtonRect = new Rect(0f, navButtonY - navButtonHeight / 2f, navButtonWidth, navButtonHeight);
-                if (Widgets.ButtonText(prevButtonRect, "<"))
+                if (currentIndex > 0 && Widgets.ButtonText(prevButtonRect, "<"))
                 {
-                    currentIndex = (currentIndex - 1 + unlockedDefs.Count) % unlockedDefs.Count;
+                    currentIndex--;
                 }
 
                 Rect nextButtonRect = new Rect(rect.width - navButtonWidth, navButtonY - navButtonHeight / 2f, navButtonWidth, navButtonHeight);
-                if (Widgets.ButtonText(nextButtonRect, ">"))
+                if (currentIndex < unlockedDefs.Count - 1 && Widgets.ButtonText(nextButtonRect, ">"))
                 {
-                    currentIndex = (currentIndex + 1) % unlockedDefs.Count;
+                    currentIndex++;
+                    if (currentIndex == unlockedDefs.Count - 1)
+                    {
+                        reachedLastItem = true;
+                    }
                 }
             }
         }
@@ -157,6 +164,7 @@ namespace TriumphantResearch
         {
             float createdInWidth = 120f;
             float descriptionWidth = bottomRect.width - 400;
+            float doneButtonWidth = 100f;
 
             Def currentDef = unlockedDefs[currentIndex];
 
@@ -173,6 +181,15 @@ namespace TriumphantResearch
             }
 
             Widgets.LabelScrollable(descriptionRect, currentDef.description, ref descriptionScrollable);
+
+            if (reachedLastItem)
+            {
+                Rect doneButtonRect = new Rect(bottomRect.xMax - doneButtonWidth, bottomRect.yMax - 30, doneButtonWidth, 30f);
+                if (Widgets.ButtonText(doneButtonRect, "TR_Done".Translate()))
+                {
+                    Close();
+                }
+            }
         }
         public static Vector2 descriptionScrollable;
 
