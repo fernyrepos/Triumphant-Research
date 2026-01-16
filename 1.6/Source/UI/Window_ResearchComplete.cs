@@ -153,7 +153,7 @@ namespace TriumphantResearch
                 if (currentIndex < unlockedDefs.Count - 1 && Widgets.ButtonText(nextButtonRect, ">"))
                 {
                     currentIndex++;
-                    if (currentIndex == unlockedDefs.Count - 1)
+                    if (currentIndex == unlockedDefs.Count - 1 || currentIndex >= 14)
                     {
                         reachedLastItem = true;
                     }
