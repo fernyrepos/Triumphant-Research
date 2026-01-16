@@ -86,11 +86,9 @@ namespace TriumphantResearch
                 contentOffsetY = 0f;
             }
 
-            int startIndex = Mathf.Max(0, currentIndex - 2);
-            int endIndex = Mathf.Min(unlockedDefs.Count - 1, currentIndex + 2);
             float itemsTotalWidth = 0f;
             float currentItemStartX = 0f;
-            for (int i = startIndex; i <= endIndex; i++)
+            for (int i = 0; i < unlockedDefs.Count; i++)
             {
                 float size = (i == currentIndex) ? currentItemSize : nextItemSize;
                 if (i < currentIndex)
@@ -99,7 +97,7 @@ namespace TriumphantResearch
                 }
                 itemsTotalWidth += size + itemSpacing;
             }
-            if (startIndex <= endIndex)
+            if (unlockedDefs.Any())
             {
                 itemsTotalWidth -= itemSpacing;
             }
@@ -112,7 +110,7 @@ namespace TriumphantResearch
             Widgets.BeginScrollView(viewRect, ref scrollPosition, contentRect, false);
 
             float currentX = sidePadding;
-            for (int i = startIndex; i <= endIndex; i++)
+            for (int i = 0; i < unlockedDefs.Count; i++)
             {
                 float itemSize = (i == currentIndex) ? currentItemSize : nextItemSize;
                 float itemY = (i == currentIndex) ? contentOffsetY : contentOffsetY + (currentItemSize - nextItemSize) / 2f;
