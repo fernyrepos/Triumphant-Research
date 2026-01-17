@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <ModMetaData>
-    <name>Triumphant-Research</name>
+    <name>Triumphant Research</name>
     <author>ferny</author>
     <packageId>ferny.TriumphantResearch</packageId>
     <description>A menu that pops up displaying everything you unlocked from your completed research project.</description>
