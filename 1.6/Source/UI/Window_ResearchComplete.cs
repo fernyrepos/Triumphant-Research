@@ -22,7 +22,24 @@ namespace TriumphantResearch
         public Window_ResearchComplete(ResearchProjectDef project)
         {
             this.project = project;
-            unlockedDefs = new List<Def>(project.UnlockedDefs);
+            unlockedDefs = new List<Def>();
+            var groupedUnlocks = ResearchPrerequisitesUtility.UnlockedDefsGroupedByPrerequisites(project);
+            foreach (var pair in groupedUnlocks)
+            {
+                bool allPrerequisitesMet = true;
+                foreach (ResearchProjectDef prereq in pair.First.unlockedBy)
+                {
+                    if (!prereq.IsFinished)
+                    {
+                        allPrerequisitesMet = false;
+                        break;
+                    }
+                }
+                if (allPrerequisitesMet)
+                {
+                    unlockedDefs.AddRange(pair.Second);
+                }
+            }
             soundAppear = DefsOf.TR_ResearchComplete;
             closeOnClickedOutside = false;
             absorbInputAroundWindow = true;
