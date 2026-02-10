@@ -18,7 +18,7 @@ namespace TriumphantResearch
         {
             var type = AccessTools.TypeByName("CM_Semi_Random_Research.Dialog_ResearchComplete_Patches");
             if (type is null) return null;
-            
+
             var method = AccessTools.Method(type, "FinishProject_Prefix");
             return method;
         }
@@ -39,5 +39,17 @@ namespace TriumphantResearch
                 return true;
             }
         }
+
+        public static void OpenTab()
+        {
+            var semiRandomResearchButton = DefDatabase<MainButtonDef>.GetNamed ("CM_Semi_Random_Research_MainButton_Next_Research", false);
+            if (semiRandomResearchButton != null && Find.MainTabsRoot != null)
+            {
+                MainTabsRoot_SetCurrentTab_Patch.allow = true;
+                Find.MainTabsRoot.SetCurrentTab(semiRandomResearchButton, true);
+                MainTabsRoot_SetCurrentTab_Patch.allow = false;
+            }
+        }
+
     }
 }
