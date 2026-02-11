@@ -51,15 +51,71 @@ namespace TriumphantResearch
 
         public override void DoWindowContents(Rect inRect)
         {
+            GUI.FocusWindow(this.ID);
+            HandleScrollInput();
+            HandleKeyboardInput();
             float bottomSectionHeight = 150f;
             float topSectionHeight = 60f;
             Rect topRect = new Rect(inRect.x, inRect.y, inRect.width, topSectionHeight);
             Rect bottomRect = new Rect(inRect.x, inRect.yMax - bottomSectionHeight, inRect.width, bottomSectionHeight);
             Rect carouselRect = new Rect(inRect.x, topRect.yMax, inRect.width, inRect.height - topRect.height - 120f);
-
             DrawTop(topRect);
             DrawCarousel(carouselRect);
             DrawBottom(bottomRect);
+        }
+
+        private void HandleKeyboardInput()
+        {
+            if (Event.current.type == EventType.KeyDown)
+            {
+                if (Event.current.keyCode == KeyCode.LeftArrow || Event.current.keyCode == KeyCode.A)
+                {
+                    if (currentIndex > 0)
+                    {
+                        currentIndex--;
+                        Event.current.Use();
+                    }
+                }
+                else if (Event.current.keyCode == KeyCode.RightArrow || Event.current.keyCode == KeyCode.D)
+                {
+                    if (currentIndex < unlockedDefs.Count - 1)
+                    {
+                        currentIndex++;
+                        if (currentIndex == unlockedDefs.Count - 1 || currentIndex >= 14)
+                        {
+                            reachedLastItem = true;
+                        }
+                        Event.current.Use();
+                    }
+                }
+            }
+        }
+
+        private void HandleScrollInput()
+        {
+            if (Event.current.type == EventType.ScrollWheel)
+            {
+                if (Event.current.delta.y > 0f)
+                {
+                    if (currentIndex > 0)
+                    {
+                        currentIndex--;
+                        Event.current.Use();
+                    }
+                }
+                else if (Event.current.delta.y < 0f)
+                {
+                    if (currentIndex < unlockedDefs.Count - 1)
+                    {
+                        currentIndex++;
+                        if (currentIndex == unlockedDefs.Count - 1 || currentIndex >= 14)
+                        {
+                            reachedLastItem = true;
+                        }
+                        Event.current.Use();
+                    }
+                }
+            }
         }
 
         private void DrawTop(Rect topRect)
@@ -333,14 +389,9 @@ namespace TriumphantResearch
             base.PostClose();
             if (ModsConfig.IsActive("arodoid.semirandomprogression") && ResearchManager_FinishProject_Patch.adding is false)
             {
-                var semiRandomResearchButton = DefDatabase<MainButtonDef>.GetNamed("CM_Semi_Random_Research_MainButton_Next_Research", false);
-                if (semiRandomResearchButton != null && Find.MainTabsRoot != null)
-                {
-                    MainTabsRoot_SetCurrentTab_Patch.allow = true;
-                    Find.MainTabsRoot.SetCurrentTab(semiRandomResearchButton, true);
-                    MainTabsRoot_SetCurrentTab_Patch.allow = false;
-                }
+                Patch_CM_Semi_Random_Research.OpenTab();
             }
         }
+
     }
 }
