@@ -51,7 +51,11 @@ namespace TriumphantResearch
 
         public override void DoWindowContents(Rect inRect)
         {
-            GUI.FocusWindow(this.ID);
+            var popups = Find.WindowStack.windows.Where(x => x is not ImmediateWindow).ToList();
+            if (popups.Last() == this)
+            {
+                GUI.FocusWindow(this.ID);
+            }
             HandleScrollInput();
             HandleKeyboardInput();
             float bottomSectionHeight = 150f;
