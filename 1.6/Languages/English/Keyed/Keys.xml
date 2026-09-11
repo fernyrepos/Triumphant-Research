@@ -5,4 +5,15 @@
   <TR_CreatedIn>Created in:</TR_CreatedIn>
   <TR_ArchitectMenu>Architect menu</TR_ArchitectMenu>
   <TR_Done>Done</TR_Done>
+  <TR_SnoozeTooltip>Snooze research popups</TR_SnoozeTooltip>
+  <TR_SnoozeHalfDay>Half a day</TR_SnoozeHalfDay>
+  <TR_SnoozeOneDay>One day</TR_SnoozeOneDay>
+  <TR_SnoozeTwoDays>Two days</TR_SnoozeTwoDays>
+  <TR_SnoozeThreeDays>Three days</TR_SnoozeThreeDays>
+  <TR_SnoozeFiveDays>Five days</TR_SnoozeFiveDays>
+  <TR_SnoozeTenDays>Ten days</TR_SnoozeTenDays>
+  <TR_SnoozeQuadrum>A quadrum</TR_SnoozeQuadrum>
+  <TR_SnoozeYear>A year</TR_SnoozeYear>
+  <TR_CancelSnooze_Off>Cancel current snooze: none active</TR_CancelSnooze_Off>
+  <TR_CancelSnooze_On>Cancel current snooze</TR_CancelSnooze_On>
 </LanguageData>

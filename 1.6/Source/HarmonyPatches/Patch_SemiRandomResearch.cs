@@ -26,6 +26,7 @@ namespace TriumphantResearch
         public static bool Prefix(ResearchProjectDef proj, ref bool doCompletionDialog, Pawn researcher, ref bool doCompletionLetter)
         {
             if (Current.ProgramState != ProgramState.Playing || Find.GameInitData != null) return true;
+            if (ResearchSnoozeTracker.IsSnoozed) return true;
             if (proj.UnlockedDefs != null && proj.UnlockedDefs.Count > 0)
             {
                 doCompletionDialog = false;

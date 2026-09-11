@@ -8,8 +8,11 @@ using Verse;
 namespace TriumphantResearch
 {
     [HotSwappable]
+    [StaticConstructorOnStartup]
     public class Window_ResearchComplete : Window
     {
+        private static Texture2D snoozeTex;
+        private static Texture2D SnoozeTex => snoozeTex ??= ContentFinder<Texture2D>.Get("TriumphantResearch/Snooze");
         private ResearchProjectDef project;
         private List<Def> unlockedDefs;
         private int currentIndex = 0;
@@ -66,6 +69,40 @@ namespace TriumphantResearch
             DrawTop(topRect);
             DrawCarousel(carouselRect);
             DrawBottom(bottomRect);
+
+            float snoozeButtonSize = 20f;
+            float snoozeMargin = 6f;
+            Rect snoozeRect = new Rect(inRect.width - snoozeButtonSize - snoozeMargin, snoozeMargin, snoozeButtonSize, snoozeButtonSize);
+            if (Widgets.ButtonImage(snoozeRect, SnoozeTex))
+            {
+                DoSnoozeFloatMenu();
+            }
+            TooltipHandler.TipRegion(snoozeRect, "TR_SnoozeTooltip".Translate());
+        }
+
+        private void DoSnoozeFloatMenu()
+        {
+            List<FloatMenuOption> options = new List<FloatMenuOption>
+            {
+                new FloatMenuOption("TR_SnoozeHalfDay".Translate(), () => DoSnooze(GenDate.TicksPerDay / 2)),
+                new FloatMenuOption("TR_SnoozeOneDay".Translate(), () => DoSnooze(GenDate.TicksPerDay)),
+                new FloatMenuOption("TR_SnoozeTwoDays".Translate(), () => DoSnooze(GenDate.TicksPerDay * 2)),
+                new FloatMenuOption("TR_SnoozeThreeDays".Translate(), () => DoSnooze(GenDate.TicksPerDay * 3)),
+                new FloatMenuOption("TR_SnoozeFiveDays".Translate(), () => DoSnooze(GenDate.TicksPerDay * 5)),
+                new FloatMenuOption("TR_SnoozeTenDays".Translate(), () => DoSnooze(GenDate.TicksPerDay * 10)),
+                new FloatMenuOption("TR_SnoozeQuadrum".Translate(), () => DoSnooze(GenDate.TicksPerQuadrum)),
+                new FloatMenuOption("TR_SnoozeYear".Translate(), () => DoSnooze(GenDate.TicksPerYear)),
+            };
+            Find.WindowStack.Add(new FloatMenu(options));
+        }
+
+        private void DoSnooze(int ticks)
+        {
+            ResearchSnoozeTracker.Snooze(ticks);
+            foreach (var window in Find.WindowStack.Windows.OfType<Window_ResearchComplete>().ToList())
+            {
+                window.Close();
+            }
         }
 
         private void HandleKeyboardInput()

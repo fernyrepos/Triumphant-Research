@@ -12,6 +12,11 @@ namespace TriumphantResearch
         public static void Prefix(ResearchProjectDef proj, ref bool doCompletionDialog, ref bool doCompletionLetter)
         {
             if (Current.ProgramState != ProgramState.Playing || Find.GameInitData != null) return;
+            if (ResearchSnoozeTracker.IsSnoozed)
+            {
+                doCompletionDialog = false;
+                return;
+            }
             if (proj.UnlockedDefs != null && proj.UnlockedDefs.Count > 0)
             {
                 doCompletionDialog = false;
