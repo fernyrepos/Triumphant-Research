@@ -428,6 +428,10 @@ namespace TriumphantResearch
         public override void PostClose()
         {
             base.PostClose();
+            if (TriumphantResearchMod.settings.pauseAfterClose && Current.ProgramState == ProgramState.Playing && !Find.WindowStack.IsOpen<Window_ResearchComplete>())
+            {
+                Find.TickManager.Pause();
+            }
             if (ModsConfig.IsActive("arodoid.semirandomprogression") && ResearchManager_FinishProject_Patch.adding is false)
             {
                 Patch_CM_Semi_Random_Research.OpenTab();

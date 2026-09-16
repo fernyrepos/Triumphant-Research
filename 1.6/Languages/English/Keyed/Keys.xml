@@ -5,6 +5,7 @@
   <TR_CreatedIn>Created in:</TR_CreatedIn>
   <TR_ArchitectMenu>Architect menu</TR_ArchitectMenu>
   <TR_Done>Done</TR_Done>
+  <TR_PauseAfterClose>Pause the game after closing the research popup</TR_PauseAfterClose>
   <TR_SnoozeTooltip>Snooze research popups</TR_SnoozeTooltip>
   <TR_SnoozeHalfDay>Half a day</TR_SnoozeHalfDay>
   <TR_SnoozeOneDay>One day</TR_SnoozeOneDay>
