@@ -315,20 +315,21 @@ namespace TriumphantResearch
             _reflectionInitialized = true;
         }
 
-        private string GetCategoryPath(DesignationCategoryDef category)
+        private string GetCategoryPath(DesignationCategoryDef category, HashSet<DesignationCategoryDef> visited = null)
         {
             InitializeReflection();
 
             if (_parentCategoryField == null || category.modExtensions == null) return category.label;
 
+            visited ??= new HashSet<DesignationCategoryDef> { category };
             foreach (var extension in category.modExtensions)
             {
                 if (extension.GetType().Name == "NestedCategoryExtension")
                 {
                     var parentCategory = _parentCategoryField.GetValue(extension) as DesignationCategoryDef;
-                    if (parentCategory != null)
+                    if (parentCategory != null && visited.Add(parentCategory))
                     {
-                        return GetCategoryPath(parentCategory) + " > " + category.label;
+                        return GetCategoryPath(parentCategory, visited) + " > " + category.label;
                     }
                 }
             }
