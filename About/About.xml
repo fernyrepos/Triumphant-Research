@@ -6,6 +6,7 @@
     <description>A menu that pops up displaying everything you unlocked from your completed research project.</description>
     <supportedVersions>
         <li>1.6</li>
+        <li>1.7</li>
     </supportedVersions>
     <loadAfter>
         <li>Ludeon.RimWorld</li>
